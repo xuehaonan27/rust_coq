@@ -2,6 +2,13 @@ use std::{cell::RefCell, rc::Rc};
 
 pub type Church<T> = Rc<dyn Fn(Rc<dyn Fn(T) -> T>) -> Rc<dyn Fn(T) -> T>>;
 
+#[macro_export]
+macro_rules! church {
+    ($x: expr) => {
+        from_usize($x)
+    };
+}
+
 pub fn zero<T: 'static>() -> Church<T> {
     // This is a function(closure) that takes a function `_f` and returns
     // another function `move |x| x`. Obviously this closure's type satisfies
@@ -18,18 +25,15 @@ pub fn one<T: 'static>() -> Church<T> {
 }
 
 // `two` is to apply a function `f` to `x` twice.
-#[cfg(not(feature = "judge"))]
 pub fn two<T: 'static>() -> Church<T> {
     Rc::new(move |f| Rc::new(move |x| f(f(x))))
 }
 
 // `three` is to apply a function `f` to `x` three times.
-#[cfg(not(feature = "judge"))]
 pub fn three<T: 'static>() -> Church<T> {
     Rc::new(move |f| Rc::new(move |x| f(f(f(x)))))
 }
 
-#[cfg(not(feature = "judge"))]
 pub fn succ<T: 'static>(n: Church<T>) -> Church<T> {
     Rc::new(move |f| {
         let f_n = n(Rc::clone(&f));
@@ -83,7 +87,6 @@ pub fn to_usize<T: 'static + Default>(n: Church<T>) -> usize {
 
 // `add` is to add two Church numbers `n` and `m`.
 // i.e. call `f` on `x` n times, and then another `m` times.
-#[cfg(not(feature = "judge"))]
 pub fn add<T: 'static>(n: Church<T>, m: Church<T>) -> Church<T> {
     Rc::new(move |f| {
         // Apply `f` n times first.
@@ -95,7 +98,6 @@ pub fn add<T: 'static>(n: Church<T>, m: Church<T>) -> Church<T> {
 }
 
 // `mult`. Applying "calling `f` on `x` n times" m times.
-#[cfg(not(feature = "judge"))]
 pub fn mult<T: 'static>(n: Church<T>, m: Church<T>) -> Church<T> {
     Rc::new(move |f| {
         // Apply `f` n times first.
@@ -108,7 +110,6 @@ pub fn mult<T: 'static>(n: Church<T>, m: Church<T>) -> Church<T> {
 
 // `exp`. Most difficult one.
 // Well, try to get some inspiration from the type annotaion of `m`.
-#[cfg(not(feature = "judge"))]
 pub fn exp<T: 'static>(n: Church<T>, m: Church<Rc<dyn Fn(T) -> T>>) -> Church<T> {
     Rc::new(move |f| {
         let n: Church<T> = n.clone();

@@ -9,7 +9,6 @@ enum Peano {
     S(Rc<Peano>), // Successor of a natural number is a natural number.
 }
 
-#[cfg(not(feature = "judge"))]
 impl Peano {
     fn pred(self) -> Self {
         match self {
@@ -23,7 +22,6 @@ impl Peano {
     }
 }
 
-#[cfg(not(feature = "judge"))]
 impl From<usize> for Peano {
     fn from(value: usize) -> Self {
         match value {
@@ -33,7 +31,6 @@ impl From<usize> for Peano {
     }
 }
 
-#[cfg(not(feature = "judge"))]
 impl Into<usize> for Peano {
     fn into(self) -> usize {
         match self {
@@ -55,7 +52,6 @@ impl Add for Peano {
     }
 }
 
-#[cfg(not(feature = "judge"))]
 impl Sub for Peano {
     type Output = Peano;
     fn sub(self, rhs: Self) -> Self::Output {
@@ -71,7 +67,6 @@ impl Sub for Peano {
     }
 }
 
-#[cfg(not(feature = "judge"))]
 impl Mul for Peano {
     type Output = Peano;
     fn mul(self, rhs: Self) -> Self::Output {

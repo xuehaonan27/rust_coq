@@ -19,6 +19,19 @@ pub fn tm_update<K: 'static + PartialEq, V: 'static + Clone>(
     Rc::new(move |k_1| if k_1 == k { v.clone() } else { m(k_1) })
 }
 
+#[macro_export]
+macro_rules! total_map {
+    ($default_v: expr, $({$k: expr, $v: expr}), *) => {
+        {
+            let mut map = tm_empty ($default_v);
+            $(
+                map = tm_update(map, $k, $v);
+            )*
+            map
+        }
+    };
+}
+
 #[cfg(test)]
 mod test_total_map {
     use super::{tm_empty, tm_update, TotalMap};
@@ -33,6 +46,11 @@ mod test_total_map {
             "bar".to_string(),
             true,
         )
+    }
+
+    #[allow(unused)]
+    fn macro_example() -> TotalMap<String, bool> {
+        total_map!(false, {"foo".to_string(), true}, {"bar".to_string(), true})
     }
 
     #[test]
@@ -65,6 +83,19 @@ pub fn pm_update<K: 'static + PartialEq, V: 'static + Clone>(
     tm_update(m, k, Some(v))
 }
 
+#[macro_export]
+macro_rules! partial_map {
+    ($({$k: expr, $v: expr}), *) => {
+        {
+            let mut map = pm_empty();
+            $(
+                map = pm_update(map, $k, $v);
+            )*
+            map
+        }
+    };
+}
+
 #[cfg(test)]
 mod test_partial_map {
     use super::{pm_empty, pm_update, PartialMap};
@@ -75,6 +106,11 @@ mod test_partial_map {
             "Turing".to_string(),
             false,
         )
+    }
+
+    #[allow(unused)]
+    fn macro_example() -> PartialMap<String, bool> {
+        partial_map!({"Church".to_string(), true}, {"Turing".to_string(), false})
     }
 
     #[test]
